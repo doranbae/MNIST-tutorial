@@ -1,2 +1,4 @@
 # MNIST-tutorial
-Build neural network models using Keras
+테스트 테스트
+잘 나오나?
+ㅌ
