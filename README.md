@@ -74,7 +74,7 @@ y_test  = np_utils.to_categorical(y_test)
 num_classes = y_test.shape[1]
 ```
 
-### Define model
+### Define & compile model
 모든 준비가 끝났으니, 가볍게 모델을 만들어 보도록 하겠습니다. Keras는 TensorFlow를 기가막히게 쉽게 사용할 수 있도록 도와줍니다. 가볍게 한다고 약속했으니, 딱 1개의 hidden layer가 있는 모델을 만들어 보겠습니다. Keras를 사용하여 모델을 만드는 작업은 샌드위치 전문점인 Subway에서 주문을 하는 과정과 비슷하다고 생각하시면 됩니다. Subway에 가면 제일 먼저 주문을 넣죠.
 <br />
 * *나: 저 BLT 주문할꺼구요...흰 빵에 햄 올려주시구요, 그 위에 양상치 올려주시고, 올리브 올려주시고, 마지막으로 이탈리아 소스 뿌려주세요*
@@ -100,11 +100,69 @@ def baseline_model():
 ```
 `Sequential()`모델은 Keras에서 사용가능 한 가장 심플한 모델로, 그냥 내가 만들고 싶은 layers를 쭉 나열하면 합체가 되는 모델입니다. 다양한 종류와 역할을 하는 각기다른 layers를 나열하는 방법이나 순서가 각각 다른 모델의 특징이 됩니다. 그런데 그 어떤 모델이던 가장 첫번째 모델이 해야 하는 역할이 있습니다. 바로 input data의 shape을 모델에 말해주는 것입니다. 
 <br />
+<br />
 비슷한 예시로 Subway에서 어떤 주문을 하던 가장 먼저 말해야 하는것은 빵 종류입니다. 빵을 고르지 않고, '양파랑 피망 빼주세요' 라고 말을 하면, 점원이 '빵은 무얼로 드릴까요' 라며 빵부터 다시 순서를 잡아줄 것입니다. 빵 없이는 샌드위치 주문이 시작될 수가 없는 거죠. 
 <br />
-Input data의 shape를 알려주는 방법은 여러가지가 있을 수 있습니다. 저는 `input_dim`이라는 argument를 사용했습니다. 이 `input_dim`에는 integer를 넣으셔야 합니다. 
+<br />
+Input data의 shape를 알려주는 방법은 여러가지가 (`input_dim` 아니면 `input_shape`) 있을 수 있습니다. 저는 `input_dim`이라는 argument를 사용했습니다. 이 `input_dim`에는 integer를 넣으셔야 합니다. 
+#### Layers의 종류들: Dense, Dropout
+Dense는 기본 layer라고 할 수 있습니다. 이름이 왜 dense이냐면, 이 layer는 fully connected 되었기 때문입니다. Fully connected 되었다는 의미는, 이 전(previous) layer에서 온 모든 데이터 값들이 하나도 빠짐 없이 고대로 이 layer에 도착한다는 의미입니다. 억지스럽게라도 Subway 예시와 연결해 보자면, 빵 면적 위에 마요네즈를 모두 펴 바른 케이스가 되겠네요. 모든 면적에 마요네즈를 바르고 똑같은 크기의 빵으로 그 위를 덮는다면, 위에 올라간 빵 모든 면적에 그대로 마요네즈가 묻겠죠. 간혹 특이한 취향의 손님은 마요네즈를 중앙에만 발라달라던지, 아니면 왼쪽 코너 아래에만 발라달라는 주문을 할 수도 있을텐데, 이런 케이스는 fully connected라고 할 수 없습니다. 아무튼 fully connected라서 dense라고 불립니다. 
+<br />
+<br />
+Dropout은 일부러 데이터 몇 개를 버려버리는 layer입니다. 아무리 고민을 해보아도 Subway 예시와 연결 지을 고리를 찾을 수가 없어 그냥 다른 적절한 예시를 들...려고 했는데, 예시가 필요하지 않을 정도로 간단한 컨셉이라 그냥 넘어가겠습니다. Overfitting 문제를 해결하기 위하여 Dropout layer를 사용합니다. 
+<br />
+<br />
+모델 구성을 보시면, `kernel_initializer` 라던지 `activation` argument가 보이는데, 이 부분은 다른 기회에 좀 더 자세하게 다루도록 하고, 지금은 일단 위와 같이 setting 했다고만 알고 넘어가도록 합시다. 
 
-## (Baseline) Multi layer perceptron model
+#### Compile (합체)
+Compile 단계에서는 세 가지 중요한 attribute를 pass해야 합니다. 
+* Model optimizer(`optimizer`): Search technique으로, 모델의 parameter를 어떻게 업데이트 할 지를 정합니다.  
+* Loss function(`loss`): Weight를 조정하며, 모델을 evaluate 합니다.
+* Metrics(`metrics`): 무얼 측정 할 것인지 정합니다 (예: accuracy)
+
+### Build model
+위에 쓴 `baseline_model`function을 사용하여, 모델을 build 하도록 하겠습니다. 
+
+```python
+model = baseline_model()
+model.fit( x_train, y_train, validation_data = (x_test, y_test), epochs = 10, batch_size = 200, verbose = 2)
+
+# 모델 스코어 점검
+scores = model.evaluate( x_test, y_test, verbose = 0 )
+print( 'Baseline error: %.2f%%'%(100 - scores[1] * 100 ) )
+```
+이제 떨리는 마음으로 모델을 실행시켜 봅니다. 
+```python
+Train on 60000 samples, validate on 10000 samples
+Epoch 1/10
+ - 4s - loss: 0.2821 - acc: 0.9202 - val_loss: 0.1378 - val_acc: 0.9606
+Epoch 2/10
+ - 3s - loss: 0.1106 - acc: 0.9679 - val_loss: 0.0939 - val_acc: 0.9709
+Epoch 3/10
+ - 3s - loss: 0.0717 - acc: 0.9794 - val_loss: 0.0743 - val_acc: 0.9781
+Epoch 4/10
+ - 3s - loss: 0.0490 - acc: 0.9865 - val_loss: 0.0722 - val_acc: 0.9777
+Epoch 5/10
+ - 3s - loss: 0.0367 - acc: 0.9895 - val_loss: 0.0621 - val_acc: 0.9804
+Epoch 6/10
+ - 3s - loss: 0.0258 - acc: 0.9932 - val_loss: 0.0619 - val_acc: 0.9798
+Epoch 7/10
+ - 3s - loss: 0.0181 - acc: 0.9957 - val_loss: 0.0621 - val_acc: 0.9796
+Epoch 8/10
+ - 3s - loss: 0.0140 - acc: 0.9968 - val_loss: 0.0577 - val_acc: 0.9818
+Epoch 9/10
+ - 3s - loss: 0.0107 - acc: 0.9977 - val_loss: 0.0634 - val_acc: 0.9813
+Epoch 10/10
+ - 3s - loss: 0.0080 - acc: 0.9984 - val_loss: 0.0591 - val_acc: 0.9821
+Baseline error: 1.79%
+```
+Error가 1.79%로 나온 것을 확인할 수 있습니다. 지금까지 설명드린 내용은 `mnist_mlp.py` 파일에서 full-version을 보실 수 있습니다. 
+<br />
+<br />
+다음 단계에서는 좀 더 complex한 모델을 사용하여, 이 accuracy를 어디까지 높일 수 있을지 보도록 하겠습니다.
+
+## Convolutional neural network model (Light version)
+
 
 
 
