@@ -307,7 +307,7 @@ Light version보다 약 0.1%p나 나아진 것을 보실 수 있습니다. 이�
 LSTM 모델의 결과부터 말하자면, 아직 optimize가 되지 않아, CNN_full_version보다 accuracy가 낮습니다. 여기서 읽는 것을 멈추셔도 되고, 뭐가 어떻게 나쁜지 구경하는 마음으로 조금 더 읽어주셔도 좋습니다.
 <br />
 <br />
-우선 필요한 keras library를 모두 다운받습니다. 
+우선 필요한 keras library를 모두 `import`합니다. 
 
 ```python
 import numpy as np
@@ -317,8 +317,7 @@ from keras.layers import LSTM, Dense
 from keras.models import load_model
 from keras.utils import np_uti
 ```
-<br />
-<br />
+
 위에 CNN을 하면서 진행헀던 pre-processing을 거치는데, 데이터 형태를 LSTM 모델에 맞게 일부 변형해보겠습니다. 일단 데이터를 받습니다. 
 
 ```python
