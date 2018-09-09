@@ -188,7 +188,7 @@ num_classes = y_test.shape[1]
 아주 간략한 버전으로 CNN모델에 어떤 Layer가 필요하고, 어떤 순서로 쌓이는지 설명드리도록 하겠습니다. 
 1. Input layer: 모든 샌드위치 주문은 빵 주문부터 시작한다는 것을 기억하시는지요. CNN에서도 가장 쳣 번째 layer는 input shape를 지정합니다. Baseline모델에서는 `Dense`라는 layer를 사용해지만 CNN에서는 Convolution2D(`Conv2D`)라는 종류를 씁니다. 
 2. Pooling layer: 두 번째 layer로 MaxPooling2D(`MaxPooling2D`)라는 종류를 씁니다. 
-3. Regularization layer: 그 위에 올라갈 layera는 regularization layer로 dropout(`Dropout`)라는 종류룰 씁니다.
+3. Regularization layer: 그 위에 올라갈 layera는 regularization layer로 dropout(`Dropout`)라는 종류를 씁니다.
 4. Flatten layer: 2D matrix를 vector로 만들어줄 layer입니다.
 5. Connected layer: 앞서 있었던 layer값들이 모두 제대로 넘어 올 수 있도록 도와주는 역할을 합니다. 
 6. Output layer: Baseline과 마찬가지로 마지막 layer에서는 모델의 측정값이 나와야 합니다. 여기에서는 shape를 10으로 조정, 컴퓨터로 하여금 손글씨 0 부터 9 중 정답을 고르라고 시킬 것입니다. 
@@ -219,7 +219,7 @@ scores = model.evaluate( x_test, y_test, verbose = 0 )
 
 print( 'simple CNN error: %.2f%%'% ( 100 - scores[1] * 100 ) )
 ```
-자 이제 두근두근하는 마음을 부여잡고 모델을 돌려봅시다. 
+자 이제 두근두근하는 마음으로 모델을 돌려봅시다. 
 ```python
 Train on 60000 samples, validate on 10000 samples
 Epoch 1/10
@@ -308,6 +308,7 @@ LSTM 모델의 결과부터 말하자면, 아직 optimize가 되지 않아, CNN_
 <br />
 <br />
 우선 필요한 keras library를 모두 다운받습니다. 
+
 ```python
 import numpy as np
 from keras.datasets import mnist
@@ -319,6 +320,7 @@ from keras.utils import np_uti
 <br />
 <br />
 위에 CNN을 하면서 진행헀던 pre-processing을 거치는데, 데이터 형태를 LSTM 모델에 맞게 일부 변형해보겠습니다. 일단 데이터를 받습니다. 
+
 ```python
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
@@ -335,7 +337,9 @@ y_test  = np_utils.to_categorical(y_test)
 
 num_classes = y_test.shape[1]
 ```
+
 모델을 define하고 compile 할 차례입니다.
+
 ```python
 def lstm_model():
     model = Sequential()
@@ -354,8 +358,8 @@ model.fit(x_train, y_train, validation_data = (x_test, y_test), batch_size = 200
 scores = model.evaluate( x_test, y_test, verbose = 0 )
 
 print( 'LSTM model error: %.2f%%'% ( 100 - scores[1] * 100 ) )
-
 ```
+
 제가 현재까지 받은 최저의 error rate는 3.58%입니다. 
 
 
