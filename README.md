@@ -1,6 +1,7 @@
 # Neural network tutorial using Keras
 
 *Disclaimer: 제가 직접 작성한 글은 아니고, 해외 자료 다수를 응용하여 제가 이해한 바에 따라 재편집/번역 하였습니다. 제가 직접/간접적으로 이용한 모든 자료는 글 하단에 모두 링크하였습니다.*
+<br />
 *Disclaimer: The following is not my original writing. I have borrowed ideas from numerous sources both directly and indirectly. All the sources I used are linked at the bottom of this page. In particular, I have found [Machine Learning Mastery](https://machinelearningmastery.com/) the most helpful.*
 
 <br />
@@ -75,15 +76,15 @@ num_classes = y_test.shape[1]
 
 ### Define model
 모든 준비가 끝났으니, 가볍게 모델을 만들어 보도록 하겠습니다. Keras는 TensorFlow를 기가막히게 쉽게 사용할 수 있도록 도와줍니다. 가볍게 한다고 약속했으니, 딱 1개의 hidden layer가 있는 모델을 만들어 보겠습니다. Keras를 사용하여 모델을 만드는 작업은 샌드위치 전문점인 Subway에서 주문을 하는 과정과 비슷하다고 생각하시면 됩니다. Subway에 가면 제일 먼저 주문을 넣죠.
-</br>
-*나: 저 BLT 주문할꺼구요...흰 빵에 햄 올려주시구요, 그 위에 양상치 올려주시고, 올리브 올려주시고, 마지막으로 이탈리아 소스 뿌려주세요*
-*점원: (주문한 데로 샌드위치 합체 중)... 나왔습니다.*
-</br> 
+<br />
+* *나: 저 BLT 주문할꺼구요...흰 빵에 햄 올려주시구요, 그 위에 양상치 올려주시고, 올리브 올려주시고, 마지막으로 이탈리아 소스 뿌려주세요*
+* *점원: (주문한 데로 샌드위치 합체 중)... 나왔습니다.*
+<br />
 
 샌드위치 만들던 기억을 떠올리면 Keras의 주문구조가 단박에 이해될 것입니다. 
 ```python
 def baseline_model():
-	# 난 모델을 만들겠다, 어떤 모델? Sequential 모델 (==> Subway에서 맨 먼저 BLT를 주문하겠다고 얘기하는 과정 )
+    # 난 모델을 만들겠다, 어떤 모델? Sequential 모델 (==> Subway에서 맨 먼저 BLT를 주문하겠다고 얘기하는 과정 )
     model = Sequential()
 
     # 첫 번째 layer (1st hidden layer)를 더할거다. 어떤 layer? Dense
@@ -98,9 +99,9 @@ def baseline_model():
     return model
 ```
 `Sequential()`모델은 Keras에서 사용가능 한 가장 심플한 모델로, 그냥 내가 만들고 싶은 layers를 쭉 나열하면 합체가 되는 모델입니다. 다양한 종류와 역할을 하는 각기다른 layers를 나열하는 방법이나 순서가 각각 다른 모델의 특징이 됩니다. 그런데 그 어떤 모델이던 가장 첫번째 모델이 해야 하는 역할이 있습니다. 바로 input data의 shape을 모델에 말해주는 것입니다. 
-</br>
+<br />
 비슷한 예시로 Subway에서 어떤 주문을 하던 가장 먼저 말해야 하는것은 빵 종류입니다. 빵을 고르지 않고, '양파랑 피망 빼주세요' 라고 말을 하면, 점원이 '빵은 무얼로 드릴까요' 라며 빵부터 다시 순서를 잡아줄 것입니다. 빵 없이는 샌드위치 주문이 시작될 수가 없는 거죠. 
-</br>
+<br />
 Input data의 shape를 알려주는 방법은 여러가지가 있을 수 있습니다. 저는 `input_dim`이라는 argument를 사용했습니다. 이 `input_dim`에는 integer를 넣으셔야 합니다. 
 
 ## (Baseline) Multi layer perceptron model
