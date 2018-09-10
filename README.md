@@ -2,7 +2,7 @@
 
 *Disclaimer: 제가 직접 작성한 글은 아니고, 해외 자료 다수를 응용하여 제가 이해한 바에 따라 재편집/번역 하였습니다. 제가 직접/간접적으로 이용한 모든 자료는 글 하단에 모두 링크하였습니다.*
 <br />
-*Disclaimer: The following is not my original writing. I have borrowed ideas from numerous sources both directly and indirectly. All the sources I used are linked at the bottom of this page. In particular, I have found [Machine Learning Mastery](https://machinelearningmastery.com/) the most helpful.*
+*Disclaimer: The following is not my original writing. I have borrowed ideas from numerous sources both directly and indirectly. All the sources I used are linked at the bottom of this page. In particular, this tutorial is largely based on Jason Brownlee's "[Handwritten Digit Recognition using Convolutional Neural Networks in Python with Keras](https://machinelearningmastery.com/handwritten-digit-recognition-using-convolutional-neural-networks-python-keras/)" tutorial. His blog is very informative and well-written. Please check out his blog [Machine Learning Mastery](https://machinelearningmastery.com/).*
 
 <br />
 데이터 사이언스의 'hello world' 격인 MNIST 데이터 세트를 이용하여 convolutional neural network와 LSTM neural network를 만들어 보겠습니다.
@@ -162,7 +162,19 @@ Error가 1.79%로 나온 것을 확인할 수 있습니다. 지금까지 설명�
 다음 단계에서는 좀 더 complex한 모델을 사용하여, 이 accuracy를 어디까지 높일 수 있을지 보도록 하겠습니다.
 
 ## Convolutional neural network model (Light version)
-[Convolutional neural network](https://en.wikipedia.org/wiki/Convolutional_neural_network)은 조금 더 advanced된 neural network로 이미지 서칭등에 자주 사용되는 아주 좋은 모델입니다. 일부 준비 과정은 위에 언급한 baselinea 모델과 동일하므로, repetitive한 순서는 설명을 생략하겠습니다.
+[Convolutional neural network](https://en.wikipedia.org/wiki/Convolutional_neural_network)은 조금 더 advanced된 neural network로 이미지 모델에 가장 최적화 되어있습니다. CNN을 제대로 설명하기엔 지면이 충분하지 않으므로, 아주 얕은 수준으로 확인하고 넘어가도록 하겠습니다. 일단 CNN은 multi-layer로 되어 있고 input data가 이미지라고 assume하고 있습니다. CNN의 컨셉을 이해하기 위해서 가장 중요한 key 두 개를 뽑자면, (1) input data가 이미지라고 assume 한다는 것과 (2) convolution이라는 용어 입니다. 
+<br />
+<br />
+컴퓨터가 이미지를 어떻게 표현하는지 아시는 분들이 아시다시피, 컴퓨터 이미지는 각각의 픽셀이 내포하는 값에 의해 화면에 나타내집니다. CNN은 이미지의 픽셀값에서 무언가 특별한 패턴(feature)을 꺼내도록 요구받습니다. 한 이미지에 있어서, 그 이미지 안에 있는 조그만 (하지만 의미 있는) 패턴을 찾아내기 위해서 CNN이 사용하는 방법은, 자세히 보기입니다. 쉬운 예를 들어보겠습니다. 
+<br />
+<br />
+먼 친척으로부터 숲 100평을 상속 받았다고 칩시다. 정부에 이 상속된 땅을 신고하기 위하여, 이 숲의 지도를 자세히 그려야 하는데, 헬리콥터를 타고 하늘 위로 올라가니 나무가 너무 빽빽하고 뭐가 뭔지 잘 보이지 않았던 거죠. 그래서 할 수 없이 지리학자를 고용하여 지도를 그리려는데, 지리학자는 하루에 1평씩만 작업을 한다고 합니다. 매일 지리학자는 1평짜리 돗자리를 들고 숲에 나아가 숲 귀퉁이에 돗자리를 깝니다. 그리고 그 날은 그 돗자리 면적에 있는 땅만 스캔하는 거죠. 스캔한 결과를 지리학자 수첩에 적어 넣습니다. 그 다음날, 지리학자는 그 돗자리를 0.5평 옆으로 옮깁니다. 그리고 다시 그 1평짜리 돗자리 면적 밑 땅만 스캔합니다. 그리고 찾아낸 finding을 지리학자 수첩에 적어 넣습니다. 이러한 방법으로 slide 하며 스캔하는 작업은 CNN의 작업과 매우 비슷하다고 볼 수 있습니다. 
+<br />
+<br />
+1평 짜리 돗자리는 CNN용어로 filter, kernel, feature detector 등의 용어로 불리고, finding을 적어 넣는 수첩을 convolved feature, activation map, feature map 등으로 부릅니다. 실제 CNN에서는 돗자리가 아니라 matrix가 쓰이고, 수첩 대신에 dot product를 사용하지만, 의미는 이해가 되셨을 겁니다. 수학적으로 접근을 하면, 제가 아는 것이 없으므로, 이 정도 수준에서 멈추도록 하겠습니다. 혹시라도 애니메이션으로 쉽게 CNN 프로세스를 보려면, Ujjwal Karn의 [the data science blog](https://ujjwalkarn.me/2016/08/11/intuitive-explanation-convnets/)를 방문하시면 됩니다. 
+<br />
+<br />
+일부 준비 과정은 위에 언급한 baselinea 모델과 동일하므로, repetitive한 순서는 설명을 생략하겠습니다.
 <br />
 <br />
 Baseline 모델을 했을 때와 마찬가지로 pre-processing 과정이 필요한데, 이는 CNN 모델에 사용하기 적합한 데이터 형태로 만들어야 하기 때문입니다. 이번에는 일부 (input data)를 다르게 변형시켜보겠습니다. 
@@ -186,7 +198,7 @@ num_classes = y_test.shape[1]
 ```
 ### CNN모델의 기본 순서
 아주 간략한 버전으로 CNN모델에 어떤 Layer가 필요하고, 어떤 순서로 쌓이는지 설명드리도록 하겠습니다. 
-1. Input layer: 모든 샌드위치 주문은 빵 주문부터 시작한다는 것을 기억하시는지요. CNN에서도 가장 쳣 번째 layer는 input shape를 지정합니다. Baseline모델에서는 `Dense`라는 layer를 사용해지만 CNN에서는 Convolution2D(`Conv2D`)라는 종류를 씁니다. 
+1. Input layer: 모든 샌드위치 주문은 빵 주문부터 시작한다는 것을 기억하시는지요. CNN에서도 가장 첫 번째 layer는 input shape를 지정합니다. Baseline모델에서는 `Dense`라는 layer를 사용해지만 CNN에서는 Convolution2D(`Conv2D`)라는 종류를 씁니다. 
 2. Pooling layer: 두 번째 layer로 MaxPooling2D(`MaxPooling2D`)라는 종류를 씁니다. 
 3. Regularization layer: 그 위에 올라갈 layera는 regularization layer로 dropout(`Dropout`)라는 종류를 씁니다.
 4. Flatten layer: 2D matrix를 vector로 만들어줄 layer입니다.
@@ -219,6 +231,21 @@ scores = model.evaluate( x_test, y_test, verbose = 0 )
 
 print( 'simple CNN error: %.2f%%'% ( 100 - scores[1] * 100 ) )
 ```
+#### Conv2D layer
+`input_shape`의 값에 무얼 넣을지 모르겠다면, x_train 데이터셋 중 샘플 한 개의 shape을 넣으면 됩니다. Pre-processing 단계에서, 데이터 shape를 (1, 28, 28)로 바꾸었는데, 이 숫자를 그냥 넣으면 됩니다. 이 각각의 숫자는 다음을 의미합니다.
+* 1: convolution filter 개수
+* 첫 번째 28: convolution kernel의 row 개수
+* 두 번째 28: convolution kernel의 column 개수
+
+#### MaxPooling2D layer
+MaxPooling2D에서는 2X2 pooling filter를 사용해서 모델의 parameter 개수를 줄이는 작업을 합니다. 필터를 사용하여 이 전(previous) layer로부터 최대 4 values를 골라냅니다.
+
+#### Dense layer
+CNN 모델이 실제로 output 값을 구하게 하려면, fully-connected layer를 더해줘야 합니다. 그렇지 않으면, 일부 샘플링에 인한 결과값만 절달될테니 말이죠. Dense layer에서 첫 번째 argument는 이 layer의 output shape 입니다. 그렇기 때문에 맨 마지막 Dense layer의 output shape는 `num_classes`, 즉 0에서 9 사이의 숫자의 개수, 10개가 되겠네요. 
+
+<br />
+<br />
+
 자 이제 두근두근하는 마음으로 모델을 돌려봅시다. 
 ```python
 Train on 60000 samples, validate on 10000 samples
@@ -303,7 +330,12 @@ Larger CNN error: 0.90%
 ```
 Light version보다 약 0.1%p나 나아진 것을 보실 수 있습니다. 이렇듯 layer를 어떻게 어떤 모양으로 더하냐(`add`)에 따라 모델의 performance가 달라질 수 있습니다. 다음 예시는 LSTM 모델입니다. 결과부터 말하자면, 아직 optimize가 되지 않아, CNN_full_version보다 accuracy가 낮습니다. 여기서 읽는 것을 멈추셔도 되고, 뭐가 어떻게 나쁜지 구경하는 마음으로 조금 더 읽어주셔도 좋습니다. 
 
-## LSTM model
+## Recurrent neural network
+### LSTM
+LSTM은 RNN의 한 종류로, sequence 데이터를 처리하는데에 유용하게 사용됩니다. 
+
+
+### LSTM model 
 LSTM 모델의 결과부터 말하자면, 아직 optimize가 되지 않아, CNN_full_version보다 accuracy가 낮습니다. 여기서 읽는 것을 멈추셔도 되고, 뭐가 어떻게 나쁜지 구경하는 마음으로 조금 더 읽어주셔도 좋습니다.
 <br />
 <br />
@@ -361,15 +393,51 @@ print( 'LSTM model error: %.2f%%'% ( 100 - scores[1] * 100 ) )
 
 제가 현재까지 받은 최저의 error rate는 3.58%입니다. 
 
+## In prduction (현업에서 사용하기)
+연습으로 Training 하는 것도 재미있지만, 실제 이 모델이 현업에서 사용되기 위해서는 저장하고 다시 부를 수 있어야 하겠습니다. 
+### Save the model
+Keras는 모델을 HDF5 파일 포맷으로 저장할 수 있게 해주며, 모델의 architecture, weights, training config (loss, optimizer)을 모두 다 저장합니다. 모델이 필요할때 불러오기만 하면 되는거죠. 
+
+```python
+model.save(filepath)
+```
+간단하게 모델을 저장했습니다. 
+
+### Reading the model
+모델을 production stage에서 사용하기 위해서는 어떤 값(input value)을 모델에 pass 할 수 있어야 하고, 모델이 내어준 답 (output value)을 들을 수 있어야 합니다. 아래는 MNIST를 production에 보낼 경우 individual input value에 대한 model output을 구하는 예시 입니다. 
+
+```python
+import sys
+from keras.models import load_model
+from scipy.misc import imread
+
+# load a model
+model = load_model('bettercnn.h5')
+
+# load an image
+image = imread(sys.argv[1]).astype(float)
+
+# normalise it in the same manner as we did for the training data
+image = image / 255.0
+
+#reshape
+image = image.reshape(1,1,28,28)
+
+# forward propagate and print index of most likely class 
+# (for MNIST this corresponds one-to-one with the digit)
+print("predicted digit: "+str(model.predict_classes(image)[0]))
+```
 
 ### Source
 * https://machinelearningmastery.com/handwritten-digit-recognition-using-convolutional-neural-networks-python-keras/
 * https://machinelearningmastery.com/build-multi-layer-perceptron-neural-network-models-keras/
 * https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/
-* https://github.com/keras-team/keras/issues/2645
 * https://stackoverflow.com/questions/46305252/valueerror-dimension-1-must-be-in-the-range-0-2-in-keras
 * https://stackoverflow.com/questions/44410135/keras-conv2d-own-filters
 * https://www.saama.com/blog/different-kinds-convolutional-filters/
+* https://elitedatascience.com/keras-tutorial-deep-learning-in-python
 * https://stackoverflow.com/questions/48243360/how-to-determine-the-filter-parameter-in-the-keras-conv2d-function
+* https://github.com/keras-team/keras/issues/2645
 * https://github.com/ar-ms/lstm-mnist/blob/master/lstm_classifier.py
 * https://github.com/ar-ms/lstm-mnist
+* https://github.com/jonhare/os-deep-learning-labs/blob/master/part1/keras-tutorial.md
